@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # 子应用的注册
     "users.apps.UsersConfig",
+
+    "home.apps.HomeConfig",
 ]
 
 MIDDLEWARE = [
@@ -54,7 +56,7 @@ ROOT_URLCONF = "blog.urls"
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR), 'templates'],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -98,9 +100,10 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
-
-TIME_ZONE = "UTC"
+# 修改语言显示
+LANGUAGE_CODE = 'zh-Hans'    #"en-us"
+# 修改时区
+TIME_ZONE = 'Asia/Shanghai'    #"UTC"
 
 USE_I18N = True
 
@@ -110,6 +113,10 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
 STATIC_URL = "static/"
+# 设置静态资源的路径
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static')
+]
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field
@@ -118,22 +125,21 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 # redis的配置
 CACHES = {
-    "default": {
+    "default": { # 默认
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:63379/0",
+        "LOCATION": "redis://127.0.0.1:6379/0",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
-    "session": {
+    "session": { # session
         "BACKEND": "django_redis.cache.RedisCache",
-        "LOCATION": "redis://127.0.0.1:63379/1",
+        "LOCATION": "redis://127.0.0.1:6379/1",
         "OPTIONS": {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
-    }
+    },
 }
-# session由数据库存储改为redis
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
 SESSION_CACHE_ALIAS = "session"
 
@@ -178,3 +184,16 @@ LOGGING = {
         },
     }
 }
+
+# 替换 系统的User 来使用自己定义的User
+# 配置信息为'子应用名.模型类型'
+AUTH_USER_MODEL = 'users.User'
+
+# 修改系统的未登录跳转连接
+LOGIN_URL = "/login/"
+
+# 设置上传的图片保存到media目录下
+MEDIA_ROOT = os.path.join(BASE_DIR,"media")
+
+# 设置图片访问的统一路由
+MEDIA_URL = '/media/'
